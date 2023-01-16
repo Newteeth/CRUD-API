@@ -1,0 +1,27 @@
+GET http://localhost:4000/api/users
+
+###
+GET http://localhost:4000/api/users/837fba05-09fb-4c69-b21b-fb8915d8fc35
+
+###
+POST http://localhost:4000/api/users
+Content-Type: application/json
+
+{
+    "username": "Svetlana 3",
+    "age": 25,
+    "hobbies": ["read", "study", "triangel"]
+}
+
+###
+PUT http://localhost:4000/api/users/b2f94b23-96db-424d-9d45-3dca2d28f362
+Content-Type: application/json
+
+{
+    "username": "Sveta Antonova",
+    "age": 12,
+    "hobbies": ["read", "study"]
+}
+
+###
+DELETE http://localhost:4000/api/users/42da0555-5bd0-43cc-bbcf-f6f8fc4878c9
