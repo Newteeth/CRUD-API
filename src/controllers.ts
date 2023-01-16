@@ -1,8 +1,9 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import { DB } from './DB.js';
 import userServece from './service.js';
 import { IUsers } from './endpoints/user.js';
 import { typeCheck } from './modules/type.js';
+import { DB } from './DB.js';
+import { code200, errorID400, errorID404, error500, errorBody400 } from './modules/errormessage.js';
 
 class userController {
 
@@ -13,9 +14,9 @@ class userController {
             res.setHeader('Content-type', 'application/json');
             res.statusCode = 200;
             res.end(JSON.stringify(users));
-        } catch (error) {
-            res.statusCode = 404;
-            res.end(JSON.stringify({code: 400, massege: `Body has no necessary fields. Error: ${error}`}));
+        } catch {
+            res.statusCode = 500;
+            res.end(JSON.stringify(error500()));
         }
     }
 
@@ -26,12 +27,17 @@ class userController {
 
         try{
             const user = await userServece.getOne(id[3]);
-            res.setHeader('Content-type', 'application/json');
-            res.statusCode = 200;
-            res.end(JSON.stringify(user));
-        } catch (error) {
-            res.statusCode = 404;
-            res.end(JSON.stringify({code: 404, massege: `User not find by ID. Error: ${error}`}));
+            if (!user) {
+                res.statusCode = 400;
+                res.end(JSON.stringify(errorBody400()));
+            } else {
+                res.setHeader('Content-type', 'application/json');
+                res.statusCode = 200;
+                res.end(JSON.stringify(user));
+            }
+        } catch {
+            res.statusCode = 500;
+            res.end(JSON.stringify(error500()));
         }
     }
 
@@ -52,7 +58,7 @@ class userController {
 
                     if (lengthObj < 4) {
                         res.statusCode = 400;
-                        res.end(JSON.stringify({code: 400, massege: `Body has no necessary fields`}));
+                        res.end(JSON.stringify(errorBody400()));
                     } else {
                         res.setHeader('Content-type', 'application/json');
                         res.statusCode = 201;
@@ -60,9 +66,9 @@ class userController {
                     } 
                 });         
             });   
-        } catch (error) {
-            res.statusCode = 400;
-            res.end(JSON.stringify({code: 400, massege: `Body has no necessary fields. Error: ${error}`}));
+        } catch {
+            res.statusCode = 500;
+            res.end(JSON.stringify(error500()));
         }
     }
 
@@ -86,7 +92,7 @@ class userController {
 
                     if (userCheck === undefined) {
                         res.statusCode = 400;
-                        res.end(JSON.stringify({code: 400, massege: 'the body has no necessary fields'}));
+                        res.end(JSON.stringify(errorID400()));
                     } else {
                         user.username = userCheck.username;
                         user.age = userCheck.age;
@@ -97,9 +103,9 @@ class userController {
                     }
                 });    
             });
-        } catch (error) {
+        } catch {
             res.statusCode = 500;
-            res.end(JSON.stringify({code: 500, massege: `YOU LUKY, SERVER ERROR: ${error}`}));
+            res.end(JSON.stringify(error500()));
         }
     }
 
@@ -107,15 +113,23 @@ class userController {
         
         const url = req.url as string;
         const id = url.split('/');
-        const user = await userServece.delete(id[3]);
+        const booleanRes = await userServece.delete(id[3]);
 
-        try{            
-            res.setHeader('Content-type', 'application/json');
-            res.statusCode = 200;
-            res.end(JSON.stringify(user));
-        } catch (error) {
+        try{
+            if (booleanRes === 0) {
+                res.statusCode = 400;
+                res.end(JSON.stringify(errorID400()));
+            } else if (booleanRes === undefined) { 
+                res.statusCode = 404;
+                res.end(JSON.stringify(errorID404()));
+            } else {
+                res.setHeader('Content-type', 'application/json');
+                res.statusCode = 200;
+                res.end(JSON.stringify(code200(DB)));
+            }            
+        } catch {
             res.statusCode = 500;
-            res.end(JSON.stringify({code: 500, massege: `YOU LUKY, SERVER ERROR: ${error}`}));
+            res.end(JSON.stringify(error500()));
         }
     }
 }

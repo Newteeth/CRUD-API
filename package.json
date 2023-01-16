@@ -6,12 +6,12 @@
   "type": "module",
   "scripts": {
     "build": "rimraf ./build && npx tsc",
-    "start": "npm run build && node build/main",
     "testCPU": "npx autocannon -c 200 -d 10 http://localhost:4000/api/users",
-    "dev": "npx nodemon",
+    "start:dev": "nodemon",
+    "start:prod": "npm run build && node build/main",
+    "start:multi": "tsc && node build/main cluster",
     "lint": "npx eslint ./src",
     "format": "npx eslint ./src --fix"
-
   },
   "repository": {
     "type": "git",
@@ -29,6 +29,7 @@
     "@types/uuid": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^5.48.1",
     "@typescript-eslint/parser": "^5.48.1",
+    "dotenv": "^16.0.3",
     "eslint": "^8.31.0",
     "nodemon": "^2.0.20",
     "prettier": "^2.8.1",

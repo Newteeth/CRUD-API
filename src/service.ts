@@ -1,6 +1,6 @@
 import { IUsers } from './endpoints/user.js';
 import { DB } from './DB.js';
-import { v4 as uuidv4 } from 'uuid';
+import { v4  as uuidv4, validate as uuidValidate }  from 'uuid';
 
 class userServece {
     async getAll() {
@@ -8,7 +8,7 @@ class userServece {
     }
 
     async getOne(id: string) {
-        if(!id){
+        if(!id && uuidValidate(id) === false){
             console.error('not correct id or was not specified');
         }
         const user = DB.find(elem => {
@@ -34,14 +34,17 @@ class userServece {
     }
 
     async delete(id: string) {
-        if (!id) {
-            console.error('not correct id or was not specified');
+        if (!id || uuidValidate(id) === false) {
+            return 0;
         }
         DB.forEach(elem => {
-            if (elem.id === id) {  
+            if (elem.id !== id) {
+                return 0;
+            }
+            if (elem.id === id) {
                 const num: number = DB.indexOf(elem);
                 DB.splice(num, 1);
-                return null;
+                return 1;
             }
         });
     }

@@ -22,7 +22,7 @@ export const server = http.createServer((req, res) => {
             break;
         }
     } else {
-        console.error('URL NOT CORRECT');
+        console.error('URL OR ID NOT CORRECT');
     }
 });
 
